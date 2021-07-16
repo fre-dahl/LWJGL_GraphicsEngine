@@ -4,6 +4,8 @@ import v2.core.adt.GLObject;
 import v2.graphics.adt.BatchADT;
 import v2.graphics.adt.BatchOBJ;
 
+import java.nio.FloatBuffer;
+
 public abstract class Batch<T extends BatchOBJ> extends GLObject implements BatchADT<T> {
 
 
@@ -14,6 +16,7 @@ public abstract class Batch<T extends BatchOBJ> extends GLObject implements Batc
 
 
     protected float[] vertices;
+    protected FloatBuffer buffer;
 
     protected int vao, vbo, ebo;
 
@@ -21,6 +24,7 @@ public abstract class Batch<T extends BatchOBJ> extends GLObject implements Batc
     protected int count;
     protected int renderCalls;
     protected int totalRenderCalls;
+    // max rendercalls
 
     private boolean drawing;
 
@@ -34,9 +38,11 @@ public abstract class Batch<T extends BatchOBJ> extends GLObject implements Batc
     @Override
     public void flush() {
         if (count == 0) return;
+        buffer.flip();
         totalRenderCalls++;
         renderCalls++;
         render(count);
+        buffer.clear();
         count = 0;
     }
 

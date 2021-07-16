@@ -9,6 +9,7 @@ import v2.graphics.SpriteSheet;
 import v2.core.Transform;
 import v2.utility.TmpMovement;
 import v2.utility.U;
+import v2.utility.io.JSONConstructor;
 
 
 public class Editor extends Scene implements MouseListener {
@@ -50,10 +51,10 @@ public class Editor extends Scene implements MouseListener {
 
 
 
-        for (int i = 0; i < 100; i++) {
-            for (int j = 0; j < 100; j++) {
+        for (int i = 0; i < 50; i++) {
+            for (int j = 0; j < 50; j++) {
 
-                createObject(new Vector2f(i * 16, j * 16));
+                createObject(new Vector2f(i * 16 , j * 16));
 
             }
         }
@@ -64,15 +65,19 @@ public class Editor extends Scene implements MouseListener {
 
     @Override
     public void handleInput(float dt) {
-        time += 2*dt;
-        float value = U.map((float) Math.sin(time),-1,1,0.0f,1f);
         TmpMovement.move(camera(), dt);
 
+        /*
+        time += 2*dt;
+        float value = U.map((float) Math.sin(time),-1,1,0.0f,1f);
 
+        /*
         for (GameObject obj : objects()) {
             obj.transform().setScale(value);
             obj.transform().setRotation((float) (Math.pow(value,2)*360));
         }
+
+         */
 
 
 
@@ -93,7 +98,7 @@ public class Editor extends Scene implements MouseListener {
 
         GameObject obj = new GameObject(new Transform(new Vector2f(pos.x,pos.y)));
         int index = U.rndInt(0,99);
-        SpriteComponent spriteComponent = new SpriteComponent(sheet.get(index), obj.transform(), 16,16,8,8,0,0);
+        SpriteComponent spriteComponent = new SpriteComponent(sheet.get(index), obj.transform(), 16,16, 8,8,0,0);
         //SpriteComponent spriteComponent = new SpriteComponent(sprite, obj.transform(),true);
         obj.addComponent(spriteComponent);
 
@@ -163,12 +168,12 @@ public class Editor extends Scene implements MouseListener {
 
     @Override
     public void rightClick_View(Vector2f pos) {
-
+        System.out.println(pos.x + " " + pos.y);
     }
 
     @Override
     public void rightClick_World(Vector2f pos) {
-        //object.transform().setPosition(pos);
+        System.out.println(pos.x + " " + pos.y);
 
 
     }

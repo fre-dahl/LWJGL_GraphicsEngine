@@ -1,11 +1,14 @@
 package v2.graphics;
 
+import org.lwjgl.system.MemoryUtil;
 import v2.core.Window;
 import v2.core.Manager;
-import v2.core.utility.ComponentArray;
+import v2.utility.Array;
 
-import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
-import static org.lwjgl.opengl.GL11.glClear;
+import java.nio.FloatBuffer;
+import java.util.ArrayList;
+
+import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
 
@@ -16,19 +19,22 @@ public class RendererTest extends Manager<SpriteComponent> {
     Texture texture1;
     Shader shader1;
     FrameBuffer fbo1;
-    SpriteBatch spriteBatch1;
-    ComponentArray<SpriteComponent> sprites;
+    SpriteBatch spriteBatch;
+    Array<SpriteComponent> sprites;
+    ArrayList<SpriteComponent> sprites2;
 
 
     @Override
     public void start() {
-        sprites = new ComponentArray<>(50);
+
+        sprites = new Array<>(2501);
+        //sprites2 = new ArrayList<>();
         texture1 = Assets.getTexture("res/images/colors.png");
         shader1 = Assets.getShader("res/shaders/default.glsl");
-        spriteBatch1 = new SpriteBatch(100);
-        spriteBatch1.init();
-
-
+        spriteBatch = new SpriteBatch(2600);
+        Shader fboShader = Assets.getShader("res/shaders/fboShader.glsl");
+        fbo1 = new FrameBuffer(fboShader,Window.viewportW(), Window.viewportH());
+        spriteBatch.init();
         texture1.bind();
         glActiveTexture(GL_TEXTURE0);
         shader1.attach();
@@ -38,39 +44,62 @@ public class RendererTest extends Manager<SpriteComponent> {
     @Override
     public void update(float dt) {
 
+        long begin = System.nanoTime();
         Window.clearColor(Color.BLACK);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        spriteBatch1.begin();
+        fbo1.bind();
+        fbo1.useTextureViewport();
 
+        shader1.attach();
         shader1.uploadCombined();
 
-        //System.out.println(sprites2.toString());
-        sprites.iterate(spriteBatch1::draw);
+
+        texture1.bind();
+        glActiveTexture(GL_TEXTURE0);
+        shader1.uploadTexture("uTex",0);
+
+        Window.clearColor(Color.BLACK);
+        glClear(GL_COLOR_BUFFER_BIT);
+
+        spriteBatch.begin();
+
+        sprites.iterate(spriteBatch::draw);
 
 
-        spriteBatch1.end();
+        spriteBatch.end();
+
+        shader1.detach();
+
+        fbo1.unBind();
+        fbo1.drawTexture();
 
 
+
+        System.out.println(((System.nanoTime() - begin) ));
+        //System.out.println(1.291E-4);
     }
 
     @Override
     public void onAddComponent(SpriteComponent component) {
+
+        //sprites2.add(component);
         sprites.add(component);
-        //sprites.add(component);
     }
 
     @Override
     public void onRemoveComponent(SpriteComponent component) {
+
+        //sprites2.remove(component);
         sprites.remove(component);
-        //sprites.remove(component);
     }
 
     @Override
     public void cleanUp() {
+        fbo1.freeMemory();
         shader1.freeMemory();
         Assets.disposeTexture("res/images/colors.png");
-        spriteBatch1.freeMemory();
+        spriteBatch.freeMemory();
     }
 
 

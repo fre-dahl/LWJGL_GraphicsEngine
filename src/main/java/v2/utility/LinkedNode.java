@@ -1,4 +1,4 @@
-package v2.core.utility;
+package v2.utility;
 
 public class LinkedNode<E> {
 

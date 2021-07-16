@@ -1,30 +1,30 @@
-package v2.core.utility;
+package v2.utility;
 
-import v2.core.adt.ComponentIterator;
-import v2.core.adt.ManagerID;
+
 import v2.core.exceptions.ElementNotFoundException;
 import v2.core.exceptions.EmptyCollectionException;
-
+import v2.utility.adt.ArrayID;
+import v2.utility.adt.ArrayIterator;
 
 @SuppressWarnings("unchecked")
 
 // auto resizable V2 array for O(1) removal
 // requires item class to implement ManagerID
 
-public class ComponentArray<T extends ManagerID> {
+public class Array<T extends ArrayID> {
 
     T[] items;
     int count = 0;
     int targetCapacity;
 
 
-    public ComponentArray(int targetCapacity) {
-        this.targetCapacity = Math.max(10,targetCapacity);
-        items = (T[]) new ManagerID[this.targetCapacity];
+    public Array(int targetCapacity) {
+        this.targetCapacity = Math.max(1,targetCapacity);
+        items = (T[]) new ArrayID[this.targetCapacity];
     }
 
 
-    public void iterate(final ComponentIterator<T> iterator) {
+    public void iterate(final ArrayIterator<T> iterator) {
 
         for (int i = 0; i < count; i++)
 
@@ -36,9 +36,9 @@ public class ComponentArray<T extends ManagerID> {
 
         if (count == items.length)
 
-            resize(Math.max(10,(int)(count * 1.75f)));
+            resize(Math.max(8,(int)(count * 1.75f)));
 
-        item.setManagerID(count);
+        item.setArrayID(count);
 
         items[count++] = item;
     }
@@ -49,15 +49,15 @@ public class ComponentArray<T extends ManagerID> {
 
             throw new EmptyCollectionException("Empty array");
 
-        int key = item.managerID();
+        int key = item.arrayID();
 
         if (key < 0 || key >= count) {
 
-            if (key == ManagerID.NONE)
+            if (key == ArrayID.NONE)
 
                 throw new ElementNotFoundException("ID = NONE");
 
-            else if (key < ManagerID.NONE)
+            else if (key < ArrayID.NONE)
 
                 throw new ElementNotFoundException("Invalid ID");
 
@@ -70,7 +70,7 @@ public class ComponentArray<T extends ManagerID> {
 
             throw new ElementNotFoundException("Items does not match");
 
-        requestedItem.setManagerID(ManagerID.NONE);
+        requestedItem.setArrayID(ArrayID.NONE);
 
         int last = count - 1;
 
@@ -85,7 +85,7 @@ public class ComponentArray<T extends ManagerID> {
 
             items[last] = null;
 
-            lastItem.setManagerID(key);
+            lastItem.setArrayID(key);
 
             items[key] = lastItem;
         }
@@ -96,7 +96,7 @@ public class ComponentArray<T extends ManagerID> {
 
             if (targetCapacity < capacity()) {
 
-                items = (T[]) new ManagerID[targetCapacity];
+                items = (T[]) new ArrayID[targetCapacity];
 
             }
         }
@@ -108,13 +108,13 @@ public class ComponentArray<T extends ManagerID> {
         if (isEmpty()) return;
 
         for (int i = 0; i < count; i++) {
-            items[i].setManagerID(ManagerID.NONE);
+            items[i].setArrayID(ArrayID.NONE);
             items[i] = null;
         }
 
         if (targetCapacity < capacity()) {
 
-            items = (T[]) new ManagerID[targetCapacity];
+            items = (T[]) new ArrayID[targetCapacity];
 
         }
 
@@ -125,7 +125,7 @@ public class ComponentArray<T extends ManagerID> {
 
         T[] items = this.items;
 
-        T[] newItems = (T[])new ManagerID[size];
+        T[] newItems = (T[])new ArrayID[size];
 
         System.arraycopy(
                 items,

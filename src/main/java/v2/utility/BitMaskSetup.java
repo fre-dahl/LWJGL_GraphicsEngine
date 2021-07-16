@@ -8,7 +8,7 @@ import static java.util.Map.entry;
 
 public class BitMaskSetup {
 
-    // HELPER CLASS to print the actual 8-bit mask for v2.tiles
+    // HELPER CLASS i used to find the actual 8-bit mask above
     // Nothing to see here..
 
     public static void printNewMask() {

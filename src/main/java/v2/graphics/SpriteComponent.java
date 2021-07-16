@@ -61,7 +61,7 @@ public class SpriteComponent extends Component implements BatchOBJ, TransformLis
     private float offsetX;
     private float offsetY;
 
-    private float rotation;
+    private float rotation; // rotate on gpu? test it
 
     private float scaleX;
     private float scaleY;
@@ -128,17 +128,17 @@ public class SpriteComponent extends Component implements BatchOBJ, TransformLis
         updateColor();
     }
 
-    // if modified externally, update must be called
+    // if modified externally, updateColor must be called
     public Color color(){
         return color;
     }
 
     public void updateColor() {
-        float f = color.floatBits();
-        vertices[C1] = f;
-        vertices[C2] = f;
-        vertices[C3] = f;
-        vertices[C4] = f;
+        float colorPacked = color.floatBits();
+        vertices[C1] = colorPacked;
+        vertices[C2] = colorPacked;
+        vertices[C3] = colorPacked;
+        vertices[C4] = colorPacked;
     }
 
     public void setSize(float width, float height) {

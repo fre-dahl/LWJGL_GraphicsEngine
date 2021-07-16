@@ -11,9 +11,7 @@ import static org.lwjgl.opengl.GL30.*;
 
 public class FrameBuffer extends GLObject {
 
-    private static final int NULL_POINTER = -1;
-
-    private int handle = NULL_POINTER;
+    private int handle = NOT_INITIALIZED;
     private Texture texture = null;
     private Shader shader;
 
@@ -27,7 +25,7 @@ public class FrameBuffer extends GLObject {
 
     public void init(int width, int height) {
 
-        if (handle != NULL_POINTER)
+        if (handle != NOT_INITIALIZED)
             freeMemory();
 
         handle = glGenFramebuffers();
@@ -71,7 +69,7 @@ public class FrameBuffer extends GLObject {
 
         vbo = glGenBuffers();
         glBindBuffer(GL_ARRAY_BUFFER, vbo);
-        glBufferData(GL_ARRAY_BUFFER, vertexBuffer, GL_DYNAMIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, vertexBuffer, GL_STATIC_DRAW);
 
         final int[] elementArray = {
 
@@ -99,6 +97,7 @@ public class FrameBuffer extends GLObject {
     }
 
     public void drawTexture() {
+
 
         shader.attach();
         texture.bind();

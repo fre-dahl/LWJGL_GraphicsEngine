@@ -1,12 +1,14 @@
 package v2.core;
 
+import org.lwjgl.glfw.GLFWCharCallbackI;
 import v2.editor.Editor;
-import v2.editor.ImGuiLayer;
 import v2.graphics.Color;
 import org.lwjgl.Version;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
+
+import java.util.Objects;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
@@ -16,6 +18,8 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 public class Window {
 
     // https://www.lwjgl.org/guide
+
+    private TimeCycle timer;
 
     private float dt;
     private float fps;
@@ -34,7 +38,6 @@ public class Window {
     private static Window window = null;
 
     private Scene currentScene = null;
-    private ImGuiLayer imguiLayer;
     private int currentSceneID = -1;
 
     private Window() {}
@@ -43,10 +46,6 @@ public class Window {
     public static Window get() {
 
         if (Window.window == null) {
-            System.out.println();
-            System.out.println("LWJGL version:" + Version.getVersion());
-            System.out.println("GLFW version:" + glfwGetVersionString());
-            System.out.println();
             Window.window = new Window();
         }
         return window;
@@ -60,7 +59,23 @@ public class Window {
 
     private void initialize(WinConfig config) {
 
-        System.out.println("INITIALIZING GLFW WINDOW");
+        String platform = System.getProperty("os.name") + ", " + System.getProperty("os.arch") + ".";
+        int numProcessors = Runtime.getRuntime().availableProcessors();
+        int JREMemoryMb = (int)(Runtime.getRuntime().maxMemory() / 1000000L);
+        String jre = System.getProperty("java.version");
+
+        System.out.println("\nWelcome!\n");
+        System.out.println("SYSTEM INFO\n");
+
+        System.out.println("---Running on: " + platform);
+        System.out.println("---JRE: " + jre);
+        System.out.println("---Available processors: " + numProcessors);
+        System.out.println("---Reserved memory: " + JREMemoryMb + " Mb");
+
+        System.out.println("---LWJGL: " + Version.getVersion());
+        System.out.println("---GLFW : " + glfwGetVersionString());
+
+        System.out.println("\nINITIALIZING GLFW WINDOW");
         // Set up an Error Callback
         GLFWErrorCallback.createPrint(System.err).set();
         // Initialize GLFW
@@ -68,7 +83,7 @@ public class Window {
             throw new IllegalStateException("Unable to Initialize GLFW.");
         }
         // Configure GLFW
-        glfwDefaultWindowHints();
+        //glfwDefaultWindowHints();
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
         int resizeable = config.resizable ? GL_TRUE : GL_FALSE;
         glfwWindowHint(GLFW_RESIZABLE, resizeable);
@@ -80,10 +95,21 @@ public class Window {
             throw new IllegalStateException("Failed to create the GLFW window.");
         }
         // Calls this function whenever there is a function callback
+        //glfwSetWindowCloseCallback(window, window_close_callback);
         glfwSetCursorPosCallback(glfwWindow, Mouse::mousePosCallback);
         glfwSetMouseButtonCallback(glfwWindow, Mouse::mouseButtonCallback);
         glfwSetScrollCallback(glfwWindow, Mouse::mouseScrollCallback);
         glfwSetKeyCallback(glfwWindow, KeyListener::keyCallback);
+        glfwSetCharCallback(glfwWindow, new GLFWCharCallbackI() {
+            @Override
+            public void invoke(long window, int codepoint) {
+
+                if (codepoint == GLFW_KEY_ENTER) System.out.println(44);
+                if ((codepoint & 0x7F) == codepoint) {
+                    System.out.println((char) codepoint);
+                }
+            }
+        });
 
         // Make OpenGL context current
         glfwMakeContextCurrent(glfwWindow);
@@ -93,12 +119,11 @@ public class Window {
         }
         else glfwSwapInterval(0);
 
-        // Make the window visible
-        glfwShowWindow(glfwWindow);
+
 
         // Get/set proper window dimensions after config
-        int[] width = new int[2];
-        int[] height = new int[2];
+        int[] width = new int[1];
+        int[] height = new int[1];
         glfwGetWindowSize(glfwWindow, width,height);
 
         this.width = width[0];
@@ -115,7 +140,7 @@ public class Window {
         // LWJGL detects the context that is current in the current thread,
         // creates the GLCapabilities instance and makes the OpenGL
         // bindings available for use.
-        GL.createCapabilities();
+
         // Set resize callback after we make the current context.
         glfwSetWindowSizeCallback(glfwWindow,this::resizeCallback);
         glfwSetWindowIconifyCallback(glfwWindow,this::minimizeCallback);
@@ -130,9 +155,14 @@ public class Window {
         }
         else aspectRatio = config.targetAspectRatio;
 
-        glEnable(GL_BLEND); // Enabling alfa-blend
-        // What blending function to use (very typical)
-        glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+
+        GL.createCapabilities();
+
+        resizeCallback(glfwWindow,width(),height());
+
+        // Make the window visible
+        glfwShowWindow(glfwWindow);
+
 
 
         // IMGUI
@@ -142,38 +172,83 @@ public class Window {
 
         // Starting scene
         System.out.println("\tSuccess");
-        Window.changeScene(0);
+
+
+
+
     }
+
+
+    public double getTime() { return System.nanoTime() / 1000000000.0; }
+
+    private static final int TARGET_UPS = 30;
+    private static final int TARGET_FPS = 60;
+
+    private boolean quit;
+    private boolean vsync;
+    private boolean sleepOnSync;
 
     private void mainLoop() {
 
+        Window.changeScene(0);
+
+        glEnable(GL_BLEND); // Enabling alfa-blend
+        // What blending function to use (very typical)
+        glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+
         float beginTime = (float) glfwGetTime();
         float endTime;
-        dt = -1.0f;
+        dt = 0.0f;
+
+
 
         while (!glfwWindowShouldClose(glfwWindow)) {
             // Tmp
             if (KeyListener.isKeyPressed(GLFW_KEY_ESCAPE))
                 glfwSetWindowShouldClose(glfwWindow,true);
+            if (KeyListener.isKeyPressed(GLFW_KEY_E))
+                glfwSwapInterval(1);
 
             // Poll events
             glfwPollEvents();
+
+
 
             if (!minimized) {
                 currentScene.update(dt);
             }
 
-            // IMGUI
-            //imguiLayer.update(dt,currentScene);
-            // Swap the color buffers
-            glfwSwapBuffers(glfwWindow);
-            // Time
+
+            glfwSwapBuffers(glfwWindow); // Swap the color buffers
             endTime = (float) glfwGetTime();
             dt = endTime - beginTime;
             fps = 1/dt;
             beginTime = endTime;
         }
     }
+
+    public void sync(int targetFPS) {
+
+        double pfs = timer.prevFrameSeconds();
+        double now = timer.timeSeconds();
+        float targetTime = 1f / targetFPS;
+
+        while (now - pfs < targetTime) {
+
+            if (sleepOnSync) {
+                Thread.yield();
+                try {
+                    Thread.sleep(1);
+                } catch (InterruptedException ex) {
+                    ex.printStackTrace();
+                    //Logger.getLogger(Window.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            now = timer.timeSeconds();
+        }
+    }
+
+    public void quit() { quit = true; }
 
     public static void changeScene(int sceneID) {
 
@@ -226,12 +301,16 @@ public class Window {
         glfwDestroyWindow(glfwWindow);
         // Terminate GLFW and free the error callback
         glfwTerminate();
-        glfwSetErrorCallback(null).free();
-        System.out.println("\tSuccess");
+        Objects.requireNonNull(glfwSetErrorCallback(null)).free();
+        System.out.println("\tTerminated");
     }
 
     private void resizeCallback(long glfwWindow, int screenWidth, int screenHeight) {
         glfwSetWindowSize(glfwWindow, screenWidth, screenHeight);
+
+
+        // do the following block in the init()
+        // where screen W and H are window W and H
 
         // Figure out the largest area that fits this target aspect ratio
         int aspectWidth = screenWidth;
@@ -242,6 +321,8 @@ public class Window {
             aspectHeight = screenHeight;
             aspectWidth = (int)((float)aspectHeight * window.aspectRatio);
         }
+
+
         // Center rectangle
         int viewPortX = (int) (((float)screenWidth / 2f) - ((float)aspectWidth / 2f));
         int viewPortY = (int) (((float)screenHeight / 2f) - ((float)aspectHeight / 2f));
@@ -255,6 +336,9 @@ public class Window {
         window.width = screenWidth;
         window.height = screenHeight;
 
+        //currentScene.camera().adjustTest(aspectWidth,aspectHeight);
+
+        //System.out.println(aspectWidth + " " + aspectHeight);
         glViewport(viewPortX,viewPortY,aspectWidth,aspectHeight);
     }
 

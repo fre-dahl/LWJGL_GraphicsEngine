@@ -80,7 +80,10 @@ public class Texture extends GLObject {
         } else {
             assert false : "Error: (Texture) Could not load image '" + filepath + "'";
         }
-        stbi_image_free(image); // This frees the bytebuffer 'image' (C language)
+        width.clear();
+        height.clear();
+        channels.clear();
+        stbi_image_free(image); // This frees the bytebuffer 'image'
         unbind();
     }
 

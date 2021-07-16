@@ -2,7 +2,7 @@ package v2.map.terrain;
 
 
 import v2.core.adt.UnorderedListADT;
-import v2.core.utility.LinkedNode;
+import v2.utility.LinkedNode;
 import v2.core.exceptions.ElementNotFoundException;
 import v2.core.exceptions.EmptyCollectionException;
 import v2.core.exceptions.TerrainPropertyWeightException;

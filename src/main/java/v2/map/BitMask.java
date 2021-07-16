@@ -3,12 +3,11 @@ package v2.map;
 
 public class BitMask {
 
-    // See v2.utility.BitMaskSetup
 
-    // Use: v2.utility.U.adjacentArr -> "key" += 1 >> i
+    // Use: util.U.adjacentArr -> "key" += 1 >> i
 
     // Converts a "8-bit Integer" to a 0 - 47 value, used to query
-    // sprite-sheets of v2.tiles. (Array size: 256) SORTED
+    // tile-sheets of v2.tiles. (Array size: 256) SORTED
 
     /*---------------------*\
     |  ___________________  |

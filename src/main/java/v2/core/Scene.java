@@ -96,23 +96,7 @@ public abstract class Scene {
         }
     }
 
-    // tmp imgui
 
-    public void sceneImgui() {
-        /*
-        if (activeGameObject != null) {
-            ImGui.begin("inspector");
-            activeGameObject.imgui();
-            ImGui.end();
-        }
-        imgui();
-
-         */
-    }
-
-    public void imgui() {
-
-    }
 
     public final void endScene() {
 

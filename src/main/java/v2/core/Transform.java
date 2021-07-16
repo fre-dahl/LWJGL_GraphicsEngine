@@ -13,7 +13,7 @@ public class Transform {
     private final Vector2f tmp;
     private float rotation;
 
-    private List<TransformListener> listeners;
+    private transient List<TransformListener> listeners;
 
     public Transform() {
         this(new Vector2f());

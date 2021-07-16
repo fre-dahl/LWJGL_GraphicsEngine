@@ -10,7 +10,7 @@ public class SpriteSheet {
     int spriteW;
     int spriteH;
 
-    public SpriteSheet(Sprite[] sprites, String id, int rows, int cols, int spriteW, int spriteH) {
+    private SpriteSheet(Sprite[] sprites, String id, int rows, int cols, int spriteW, int spriteH) {
         this.sprites = sprites;
         this.id = id;
         this.rows = rows;
@@ -31,8 +31,8 @@ public class SpriteSheet {
 
         String id = region.id;
 
-        final int x0 = region.x0;
-        final int y0 = region.y0;;
+        final int x0 = region.originX;
+        final int y0 = region.originY;;
         final int rows = region.rows;
         final int cols = region.cols;
         final int count = region.count;
@@ -61,10 +61,10 @@ public class SpriteSheet {
 
                 else { if (n++ == count) break out;
 
-                    float v2 = ((y0 - spriteH * row)           - fix) * invTxHeight;
-                    float u2 = ((x0 + spriteW + spriteW * col) - fix) * invTxWidth;
                     float u  = ((x0 + spriteW * col)           + fix) * invTxWidth;
                     float v  = ((y0 - spriteH - spriteH * row) + fix) * invTxHeight;
+                    float u2 = ((x0 + spriteW + spriteW * col) - fix) * invTxWidth;
+                    float v2 = ((y0 - spriteH * row)           - fix) * invTxHeight;
 
                     Sprite sprite = new Sprite(texture,spriteW,spriteH,u,v,u2,v2);
                     arr[index] = sprite;

@@ -36,21 +36,29 @@ public class Camera {
     private final float zoomFloor = 1/8f;
     private final float zoomCeil = 16f;
 
-    private final float viewportW;
-    private final float viewportH;
-    private final float viewportW_half;
-    private final float viewportH_half;
+    private float viewportW;
+    private float viewportH;
+    private float viewportW_half;
+    private float viewportH_half;
 
     public Camera() {
         this(new Vector2f());
     }
 
+    /*
     public Camera(Vector2f position) {
-        this(position,Window.width(),Window.height());
+        this(position,2*18,2*18*(1/Window.aspectRatio()));
+    }
+
+     */
+
+    public Camera(Vector2f position) {
+        this(position,Window.viewportW(),Window.viewportH());
     }
 
     public Camera(Vector2f position, float viewportW, float viewportH) {
 
+        System.out.println(viewportW);
         this.position = position;
         this.lastPosition = new Vector2f(position);
 
@@ -85,6 +93,20 @@ public class Camera {
     private void setWindowMatrices() {
         windowMatrix.ortho(0, viewportW,0, viewportH,0.0f,100.0f);
         windowMatrix.invert(inverseWindow);
+    }
+
+    private void setWindowMatrices(float viewportW, float viewportH) {
+        windowMatrix.ortho(0, viewportW,0, viewportH,0.0f,100.0f);
+        windowMatrix.invert(inverseWindow);
+    }
+
+    public void adjustTest(float viewportW, float viewportH) {
+        this.viewportW = viewportW * 16f/12f;
+        this.viewportH = viewportH * 16f/12f;
+        this.viewportW_half = viewportW / 2;
+        this.viewportH_half = viewportH / 2;
+        //setWindowMatrices(viewportW,viewportH);
+        adjustProjection();
     }
 
     private void adjustProjection() {
@@ -134,7 +156,8 @@ public class Camera {
         vec3Temp1.y = (2 * y) * Window.viewH_normalized() - 1;
         vec3Temp1.z = 0; // try 1 if anything mysterious
         vec3Temp2.set(vec3Temp1);
-        vec3Temp1.mulProject(inverseProjection).mulProject(inverseView);
+        vec3Temp1.mulProject(inverseProjection);
+        vec3Temp1.mulProject(inverseView);
         vec3Temp2.mulProject(inverseWindow);
         world.set(vec3Temp1.x, vec3Temp1.y);
         window.set(vec3Temp2.x, vec3Temp2.y);

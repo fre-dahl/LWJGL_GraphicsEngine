@@ -13,6 +13,7 @@ import java.nio.file.Paths;
 
 import static org.lwjgl.opengl.GL11.GL_FALSE;
 import static org.lwjgl.opengl.GL20.*;
+import static org.lwjgl.opengl.GL30.glBindFragDataLocation;
 
 public class Shader extends GLObject {
 
@@ -81,6 +82,7 @@ public class Shader extends GLObject {
             // Compile and link the shaders
             // ==============================================================
 
+            //glBindFragDataLocation(2,2,"df");
             int fragmentID;
             int vertexID;
 

@@ -1,12 +1,12 @@
 package v2.core;
 
 
-import v2.core.adt.ManagerID;
+import v2.utility.adt.ArrayID;
 
-public abstract class Component implements ManagerID {
+public abstract class Component implements ArrayID {
 
     private GameObject gameObject;
-    private int managerID = ManagerID.NONE;
+    private int arrayID = ArrayID.NONE;
 
 
     public GameObject gameObject() {
@@ -18,12 +18,12 @@ public abstract class Component implements ManagerID {
     }
 
     @Override
-    public int managerID() {
-        return managerID;
+    public int arrayID() {
+        return arrayID;
     }
 
     @Override
-    public void setManagerID(int id) {
-        this.managerID = id;
+    public void setArrayID(int id) {
+        arrayID = id;
     }
 }

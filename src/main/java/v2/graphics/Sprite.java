@@ -26,8 +26,8 @@ public class Sprite {
         float fix = 0.001f;
 
         u +=  fix * invTxWidth;
-        u2 -= fix * invTxWidth;
         v +=  fix * invTxHeight;
+        u2 -= fix * invTxWidth;
         v2 -= fix * invTxHeight;
     }
 
@@ -38,6 +38,8 @@ public class Sprite {
     public Texture texture() {
         return texture;
     }
+
+
 
 
 }

@@ -9,6 +9,8 @@ import v2.utility.FastNoiseLite;
 import v2.utility.TmpMovement;
 import v2.utility.U;
 
+import java.util.ArrayList;
+
 public class TestScene extends Scene implements MouseListener {
 
     float lastZoomValue = camera().getZoom();
@@ -21,6 +23,9 @@ public class TestScene extends Scene implements MouseListener {
     public v2.map.ProceduralMap map2;
     public ElevationTest elevTest;
     public ProceduralMap map;
+
+
+
     public TestScene(String title) {
         super(title, new Camera(new Vector2f()));
     }
@@ -28,84 +33,7 @@ public class TestScene extends Scene implements MouseListener {
     @Override
     public void load() {
 
-        /*
-        Matrix4f matrix = new Matrix4f();
-        System.out.println(matrix.toString());
-        System.out.println();
-        matrix.translate(100,100,0);
-        System.out.println(matrix.toString());
-        System.out.println();
-        //matrix.scale(2,2,1);
-        //System.out.println(matrix.toString());
-        //System.out.println();
-        matrix.rotateZ((float) Math.toRadians(90));
-        System.out.println(matrix.toString());
-        System.out.println();
 
-        matrix.translate(100,100,0);
-        System.out.println(matrix.toString());
-        System.out.println();
-
-        Vector3f position = new Vector3f(1,1,0);
-
-        position = position.mulPosition(matrix);
-
-        System.out.println();
-        System.out.println(position);
-
-        // translate(0, 0, -radius).rotateX(pitch).rotateY(yaw).translate(-centerPosition)
-
-         */
-
-        /*
-        Matrix4f transform = new Matrix4f();
-        float scale = 2;
-
-        Vector3f rectBottomLeft = new Vector3f(1,1,0);
-        Vector3f rectTopRight = new Vector3f(4,4,0);
-
-        float baryCenterX = (rectBottomLeft.x + rectTopRight.x) / 2;
-        float baryCenterY = (rectBottomLeft.y + rectTopRight.y) / 2;
-
-        Vector3f baryCenter = new Vector3f(baryCenterX,baryCenterY,0);
-
-        transform.translate(baryCenter).scale(scale,scale,1).translate(-baryCenter.x,-baryCenter.y,0);
-
-        rectBottomLeft.mulProject(transform);
-        rectTopRight.mulProject(transform);
-
-         */
-
-
-        /*
-        float width = 3;
-        float height = 4;
-
-        Vector3f center = new Vector3f(3,3,0);
-        Matrix4f transform = new Matrix4f();
-
-        transform.translate(center).rotateZ((float)Math.toRadians(90)).scale(2,2,1).translate(-center.x,-center.y,0);
-
-        center.mulProject(transform);
-
-        System.out.println(center);
-
-        Vector3f position = new Vector3f(300,300,0);
-        Vector2f scale = new Vector2f(100,100);
-        Vector3f point = new Vector3f(50,50,0);
-        Vector3f offset = new Vector3f(-50,-50,0);
-
-        transform.identity().
-                translate(position).
-                rotateZ((float)Math.toRadians(90)).
-                translate(-offset.x,-offset.y, 0);
-
-        point.mulProject(transform);
-
-        System.out.println();
-        System.out.println(point);
-
-         */
 
 
 
@@ -119,6 +47,9 @@ public class TestScene extends Scene implements MouseListener {
         map.init();
         elevTest = new ElevationTest(map,80000);
         elevTest.init();
+
+
+
     }
 
     @Override
@@ -149,13 +80,7 @@ public class TestScene extends Scene implements MouseListener {
         map.dispose();
     }
 
-    @Override
-    public void imgui() {
-        //ImGui.begin("Test Window");
-        //ImGui.text("Some random text");
-        //ImGui.end();
-    }
-
+    
     public void onZoomInn() {
 
     }

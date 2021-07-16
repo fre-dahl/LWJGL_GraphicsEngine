@@ -4,7 +4,8 @@ public class TextureRegion {
 
     public String id;
 
-    public int x0,y0;
+    public int originX;
+    public int originY;
     public int rows;
     public int cols;
     public int count;
@@ -12,15 +13,19 @@ public class TextureRegion {
     public int spriteW;
     public int spriteH;
 
-    public TextureRegion(int x0, int y0, int rows, int cols, int count, int offset, int spriteW, int spriteH, String id) {
+    public TextureRegion(int originX, int originY, int rows, int cols, int count, int offset, int spriteW, int spriteH, String id) {
         this.id = id;
-        this.x0 = x0;
-        this.y0 = y0;
+        this.originX = originX;
+        this.originY = originY;
         this.rows = rows;
         this.cols = cols;
         this.count = count;
         this.offset = offset;
         this.spriteW = spriteW;
         this.spriteH = spriteH;
+    }
+
+    public TextureRegion(int originX, int originY, int regionW, int regionH)  {
+
     }
 }
